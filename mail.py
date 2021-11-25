@@ -1,5 +1,6 @@
 from pyOutlook import OutlookAccount
 from msal import PublicClientApplication
+import database
 
 config = open('config.txt','r')
 appid = config.readline().strip()
@@ -34,8 +35,27 @@ else:
 token = result["access_token"]
 account = OutlookAccount(token)
 
+
+conn = database.create_connection()
+cur = database.create_cursor(conn)
+database.format_table(conn,cur)
+
+
+
 #msg_head = account.get_messages(page=0)
 #print(msg_head[0])
 
 inbox = account.inbox()
 print("inbox body:",inbox[0].body)
+print("inbox json:",inbox[0].api_representation)
+print("inbox attachment:",inbox[0].attachments)
+print("inbox message_id:",inbox[0].message_id)
+
+for i in range(20):
+    body = inbox[i].body
+    msgid = inbox[i].message_id
+    database.db_insert(conn,cur,body,msgid)
+
+get = database.db_get(conn,cur)
+print(get[0][0])
+database.db_close(conn)
