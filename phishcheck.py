@@ -10,9 +10,7 @@ def checkurl(url: str) -> bool:
     if not exists("PhishTank.json"):
         print("Database not found, downloading...")
 
-        url = requests.get("http://data.phishtank.com/data/online-valid.json")
-        full_list = json.loads(url.text)
-
+        full_list = json.loads(requests.get("https://data.phishtank.com/data/online-valid.json").text)
         for line in full_list:
             for key, value in line.items():
                 if key == "url":
