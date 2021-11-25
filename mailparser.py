@@ -6,16 +6,14 @@ class parsedMail:
 
     parsed = {
         "m_id": "",
-        "name": "",
         "email": "",
         "subject": "",
         "text": "",
         "all_links": []
     }
 
-    def __init__(self, message_id: str, sender_name: str, sender_email: str, subject_text: str, text_body: str, all_links: list):
+    def __init__(self, message_id: str, sender_email: str, subject_text: str, text_body: str, all_links: list):
         self.parsed["m_id"] = message_id
-        self.parsed["name"] = sender_name
         self.parsed["email"] = sender_email
         self.parsed["subject"] = subject_text
         self.parsed["text"] = text_body
@@ -31,7 +29,8 @@ def extract_links(text: str) -> list:
 def mailparser(email):
     # TODO: fix sender email and name
     body = email.body
-    # sender = email.sender_email
+    sender = email.sender
+    sender_email = sender.email
     subject = email.subject
     m_id = email.message_id
 
@@ -43,16 +42,14 @@ def mailparser(email):
         hyperlinks.append(link.get("href"))
 
     links = extract_links(text)
-    sender_name = ""
-    sender_email = ""
-    return m_id, sender_name, sender_email, subject, text, links, hyperlinks
+    return m_id, sender_email, subject, text, links, hyperlinks
 
 
 def parse_all_emails(email_list: list) -> dict:
     parsedMails = []
     for email in email_list:
-        m_id, sender_name, sender_email, subject, text, links, hyperlinks = mailparser(email)
+        m_id, sender_email, subject, text, links, hyperlinks = mailparser(email)
         all_links = links + hyperlinks
-        mail = parsedMail(m_id, sender_name, sender_email, subject, text, all_links)
+        mail = parsedMail(m_id, sender_email, subject, text, all_links)
         parsedMails.append(mail)
     return parsedMails
