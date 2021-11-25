@@ -1,5 +1,5 @@
-input_f = "/input/"
-output_f = "/output/"
+input_f = "input/"
+output_f = "output/"
 
 logger_name = "email_checker_log.txt"
 
