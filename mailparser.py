@@ -15,7 +15,7 @@ def mailparser(email):
     sender_email = sender.email
     subject = email.subject
     m_id = email.message_id
-
+    attachment_names = email.attachments
     soup = BeautifulSoup(body, features="html.parser")
 
     text = soup.get_text()
@@ -24,14 +24,14 @@ def mailparser(email):
         hyperlinks.append(link.get("href"))
 
     links = extract_links(text)
-    return m_id, sender_email, subject, text, links, hyperlinks
+    return m_id, sender_email, subject, text, links, hyperlinks, attachment_names
 
 
 def parse_all_emails(email_list: list) -> list:
     parsedMails = []
     for email in email_list:
-        m_id, sender_email, subject, text, links, hyperlinks = mailparser(email)
+        m_id, sender_email, subject, text, links, hyperlinks, attachments = mailparser(email)
         all_links = links + hyperlinks
-        parsed = {"m_id": m_id, "email": sender_email, "subject": subject, "text": text, "links": all_links}
+        parsed = {"m_id": m_id, "email": sender_email, "subject": subject, "text": text, "links": all_links, "attachment_names": attachments}
         parsedMails.append(parsed)
     return parsedMails
