@@ -105,3 +105,15 @@ def check_grammar(text: str) -> float:
     for token in tokens:
         # TODO: something to check the grammar maybe
         pass
+
+
+def dummy_check_attachments(attachments: list) -> float:
+    if len(attachments) != 0:
+        for attachment in attachments:
+            extension = attachment.split(".")[1]
+            if extension == "exe":
+                return 0.0
+            elif extension in config.possibly_dangerous:
+                return 0.5
+            else:
+                return 1.0
