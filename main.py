@@ -32,7 +32,7 @@ def main():
     logging.info("Emails parsed")
     for email in parsed:
         # email["text"] = nlp.remove_stop_words(email["text"]) can use to remove extra stuff if needed
-        text = email.parsed["text"]
+        text = email["text"]
         ex_score = nlp.score_exclamation_marks(text)
         keywords = nlp.find_keywords(text)
         web_crawler(keywords)
