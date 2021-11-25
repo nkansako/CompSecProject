@@ -22,25 +22,25 @@ def db_close(conn):
 
 def format_table(conn,cur):
     cur.execute("DROP TABLE IF EXISTS MAIL")
-    com = 'CREATE TABLE MAIL(BODY CHAR(12345), MSG_ID CHAR(1024))'
+    com = 'CREATE TABLE MAIL(BODY CHAR(12345), MSG_ID CHAR(1024), SENDER CHAR(255), LINKS CHAR(12345), SCORE CHAR(255))'
     cur.execute(com)
     print("DB: table 'mail' created successfully")
     conn.commit
 
 #insert checks if message already exists.
-def db_insert(conn,cur,body,msg_id):
+def db_insert(conn,cur,body,msg_id,sender,links,score):
     try:
-        (body, msg_id) = (body),(msg_id)
+        (body, msg_id, sender, links, score) = (str(body)),(str(msg_id)),(str(sender)),(str(links)),(str(score))
         cur.execute('SELECT msg_id FROM mail WHERE msg_id = ?',(msg_id,))
         get = cur.fetchall()
         if len(get)!=0:
             print("message already exists in database.")
         else:
-            cur.execute('INSERT INTO MAIL(BODY, MSG_ID) VALUES (?, ?)',(body,msg_id))
+            cur.execute('INSERT INTO MAIL(BODY, MSG_ID, SENDER, LINKS, SCORE) VALUES (?, ?, ?, ?, ?)',(body,msg_id,sender,links,score))
             conn.commit()
             print("message succesfully saved to database.")
     except Error as e:
-        print(e)
+        print("ERROR in db_insert: ",e)
 
 def db_get(conn,cur):
     try:

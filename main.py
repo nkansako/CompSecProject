@@ -6,6 +6,7 @@ import config
 import database
 import nltk
 nltk.download('punkt')
+import ast
 
 
 def main():
@@ -18,13 +19,13 @@ def main():
     conn = database.create_connection()
     cur = database.create_cursor(conn)
     database.format_table(conn,cur)
-    print(len(messages))
-    for i in range(len(messages) or 20):
-        body = messages[i].body
-        msgid = messages[i].message_id
-        database.db_insert(conn,cur,body,msgid)
-    get = database.db_get(conn,cur)
-    print("DB GET succesful!")
+    print("Got ",len(messages)," messages.")
+    #for i in range(len(messages) or 20):
+    #    body = messages[i].body
+    #    msgid = messages[i].message_id
+    #    database.db_insert(conn,cur,body,msgid)
+    #get = database.db_get(conn,cur)
+    #print("DB GET succesful!")
 
 
     logging.info("Parsing emails")
@@ -36,10 +37,19 @@ def main():
         ex_score = nlp.score_exclamation_marks(text)
         keywords = nlp.find_keywords(text)
         web_crawler(keywords)
+        body = text
+        msgid = email["m_id"]
+        sender = email["email"]
+        links = email["links"]
+
+        database.db_insert(conn,cur,body,msgid,sender,links,ex_score)
+    get = database.db_get(conn,cur)
+    danklist = ast.literal_eval(get[0][3])
+    print("GET:",get[0][3])
+    print("linklist:",danklist)
 
     #close DB
     database.db_close(conn)
-    print("DB closed.")
 
 
 def check_file():
