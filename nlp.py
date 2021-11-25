@@ -43,7 +43,7 @@ def check_sender_name(sender: str) -> bool:
     # TODO something that checks if name is fine
     if name == "paju-admin":
         return True
-    elif :
+    else:
         return False
 
 
