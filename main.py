@@ -42,8 +42,6 @@ def main(account):
     parsedGet = database.parseGet(get[0])
     print(parsedGet["links"])
 
-    #close DB
-    database.db_close(conn)
 
 
 def check_file():
@@ -78,3 +76,5 @@ if __name__ == "__main__":
     cur = database.create_cursor(conn)
     database.format_table(conn,cur)
     main(account)
+    #close DB
+    database.db_close(conn)
