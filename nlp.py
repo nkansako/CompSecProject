@@ -41,7 +41,7 @@ def check_domain(sender: str) -> bool:
 def check_sender_name(sender: str) -> bool:
     name = sender.split("@")[0]
     # TODO something that checks if name is fine
-    if name == "paju-admin":
+    if name == "paju-admin" or name == "ict-tiedote":
         return True
     else:
         return False
@@ -58,7 +58,7 @@ def score_exclamation_marks(text: str) -> float:
     return score
 
 
-def sender_score(name: str, email:str) -> float:
+def sender_score(name: str, email: str) -> float:
     email_value = check_domain(email)
     name_value = check_sender_name(name)
 
@@ -117,3 +117,11 @@ def dummy_check_attachments(attachments: list) -> float:
                 return 0.5
             else:
                 return 1.0
+
+
+def check_link(link: str) -> bool:
+    # Check if link is from university of Oulu
+    if config.domain_staff in link and ".com" not in link and ".net" not in link:
+        return True
+    else:
+        return False
