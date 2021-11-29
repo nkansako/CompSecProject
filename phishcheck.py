@@ -1,4 +1,7 @@
 import json
+import os.path
+import time
+
 import requests
 from os.path import exists
 
@@ -7,8 +10,8 @@ def checkurl(url: str) -> bool:
     url_list = []
     is_phish = False
 
-    if not exists("PhishTank.json"):
-        print("Database not found, downloading...")
+    if not exists("PhishTank.json") or (time.time() - os.path.getmtime("PhishTank.json")) >= (7 * 24 * 60 * 60):
+        print("Database not found or it's need update, downloading...")
 
         full_list = json.loads(requests.get("https://data.phishtank.com/data/online-valid.json").text)
         for line in full_list:
