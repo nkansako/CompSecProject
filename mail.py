@@ -3,7 +3,7 @@ from msal import PublicClientApplication
 import logging
 
 
-def authenticate_and_get_messages():
+def authenticate():
     config = open('config.txt', 'r')
     appid = config.readline().strip()
     auth = config.readline().strip()
@@ -39,10 +39,12 @@ def authenticate_and_get_messages():
 
     # msg_head = account.get_messages(page=0)
     # print(msg_head[0])
+    # print("inbox body:", inbox[0].body)
+    return account
+    #mailparser.parse_all_emails(inbox)
+
+def getMail(account):
     logging.info("Collecting inbox")
     inbox = account.inbox()
     logging.info("Inbox found")
-    # print("inbox body:", inbox[0].body)
-
     return inbox
-    #mailparser.parse_all_emails(inbox)

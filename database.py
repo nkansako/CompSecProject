@@ -1,5 +1,6 @@
 import sqlite3
 from sqlite3 import Error
+import ast
 
 #create a database connection to a SQLite database
 def create_connection():
@@ -52,3 +53,11 @@ def db_get(conn,cur):
         return get
     except Error as e:
         print(e)
+
+def parseGet(get):
+    try:
+        tmp = ast.literal_eval(get[3])
+        parsedGet = {"body": get[0], "msg_id": get[1], "sender": get[2], "links": tmp, "score": get[4]}
+        return parsedGet
+    except Error as e:
+        print("error in getToList: ",e)

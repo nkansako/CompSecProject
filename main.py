@@ -9,16 +9,11 @@ nltk.download('punkt')
 import ast
 
 
-def main():
+def main(account):
     # TODO write main functionality
 
     #init_logger()
-    messages = mail.authenticate_and_get_messages()
-    # add messages to DB
-    print("Creating database...")
-    conn = database.create_connection()
-    cur = database.create_cursor(conn)
-    database.format_table(conn,cur)
+    messages = mail.getMail(account)
     print("Got ",len(messages)," messages.")
     #for i in range(len(messages) or 20):
     #    body = messages[i].body
@@ -41,12 +36,11 @@ def main():
         msgid = email["m_id"]
         sender = email["email"]
         links = email["links"]
-
+        
         database.db_insert(conn,cur,body,msgid,sender,links,ex_score)
     get = database.db_get(conn,cur)
-    danklist = ast.literal_eval(get[0][3])
-    print("GET:",get[0][3])
-    print("linklist:",danklist)
+    parsedGet = database.parseGet(get[0])
+    print(parsedGet["links"])
 
     #close DB
     database.db_close(conn)
@@ -78,4 +72,9 @@ def init_logger():
 
 
 if __name__ == "__main__":
-    main()
+    account = mail.authenticate()
+    print("Creating database...")
+    conn = database.create_connection()
+    cur = database.create_cursor(conn)
+    database.format_table(conn,cur)
+    main(account)
