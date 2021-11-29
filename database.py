@@ -23,21 +23,23 @@ def db_close(conn):
 
 def format_table(conn,cur):
     cur.execute("DROP TABLE IF EXISTS MAIL")
-    com = 'CREATE TABLE MAIL(BODY CHAR(12345), MSG_ID CHAR(1024), SENDER CHAR(255), LINKS CHAR(12345), SCORE CHAR(255))'
+    com = 'CREATE TABLE MAIL(BODY CHAR(12345) NOT NULL, MSG_ID CHAR(1024) NOT NULL, SENDER CHAR(255) NOT NULL, LINKS CHAR(12345) NOT NULL, SCORE CHAR(255) NOT NULL, ATTACHMENTS CHAR(1024) NOT NULL)'
     cur.execute(com)
     print("DB: table 'mail' created successfully")
     conn.commit
 
 #insert checks if message already exists.
-def db_insert(conn,cur,body,msg_id,sender,links,score):
+def db_insert(conn,cur,body,msg_id,sender,links,score,attachments):
     try:
-        (body, msg_id, sender, links, score) = (str(body)),(str(msg_id)),(str(sender)),(str(links)),(str(score))
+        if(len(attachments)==0):
+            attachments = 0
+        (body, msg_id, sender, links, score, attachments) = (str(body)),(str(msg_id)),(str(sender)),(str(links)),(str(score)),(str(attachments))
         cur.execute('SELECT msg_id FROM mail WHERE msg_id = ?',(msg_id,))
         get = cur.fetchall()
         if len(get)!=0:
             print("message already exists in database.")
         else:
-            cur.execute('INSERT INTO MAIL(BODY, MSG_ID, SENDER, LINKS, SCORE) VALUES (?, ?, ?, ?, ?)',(body,msg_id,sender,links,score))
+            cur.execute('INSERT INTO MAIL(BODY, MSG_ID, SENDER, LINKS, SCORE, ATTACHMENTS) VALUES (?, ?, ?, ?, ?, ?)',(body,msg_id,sender,links,score,attachments))
             conn.commit()
             print("message succesfully saved to database.")
     except Error as e:
@@ -57,7 +59,7 @@ def db_get(conn,cur):
 def parseGet(get):
     try:
         tmp = ast.literal_eval(get[3])
-        parsedGet = {"body": get[0], "msg_id": get[1], "sender": get[2], "links": tmp, "score": get[4]}
+        parsedGet = {"body": get[0], "msg_id": get[1], "sender": get[2], "links": tmp, "score": get[4], "attachments": get[5]}
         return parsedGet
     except Error as e:
         print("error in getToList: ",e)

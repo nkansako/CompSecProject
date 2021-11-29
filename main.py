@@ -7,9 +7,10 @@ import database
 import nltk
 nltk.download('punkt')
 import ast
+import time
 
 
-def main(account):
+def main():
     # TODO write main functionality
 
     #init_logger()
@@ -36,8 +37,9 @@ def main(account):
         msgid = email["m_id"]
         sender = email["email"]
         links = email["links"]
+        attachments = email["attachment_names"]
         
-        database.db_insert(conn,cur,body,msgid,sender,links,ex_score)
+        database.db_insert(conn,cur,body,msgid,sender,links,ex_score,attachments)
     get = database.db_get(conn,cur)
     parsedGet = database.parseGet(get[0])
     print(parsedGet["links"])
@@ -70,11 +72,14 @@ def init_logger():
 
 
 if __name__ == "__main__":
+    startTime = time.perf_counter()
+    #authenticate, get account token
     account = mail.authenticate()
+    #format database
     print("Creating database...")
     conn = database.create_connection()
     cur = database.create_cursor(conn)
     database.format_table(conn,cur)
-    main(account)
+    main()
     #close DB
     database.db_close(conn)
