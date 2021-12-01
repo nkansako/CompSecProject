@@ -9,6 +9,7 @@ check_sender = True
 check_body = True
 
 keyword_count = 3
+crawl_count = 3
 
 domain_staff = "oulu.fi"
 domain_student = "student.oulu.fi"
