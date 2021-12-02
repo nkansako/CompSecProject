@@ -1,10 +1,10 @@
 import config
 from bs4 import BeautifulSoup
-from bs4.element import Comment
 import requests
 
 
 def crawl(searchwords: list):
+    texts = []
     if len(searchwords) != 0:
         for searchword in searchwords:
             search = config.search_beginning + searchword + config.search_end
@@ -13,9 +13,9 @@ def crawl(searchwords: list):
             soup = BeautifulSoup(page.content, "html.parser")
             newUrls = []
             for link in soup.find_all("a", "teaser"):
-                print(link.get("href"))
+                tmp = link.get("href")
 
-                newUrls.append(config.crawl_base+link.get("href"))
+                newUrls.append(config.crawl_base+tmp)
 
             for url in newUrls:
                 page = requests.get(url)
@@ -24,7 +24,8 @@ def crawl(searchwords: list):
 
                 for hit in soup.find_all(attrs={'class': 'body'}):
                     text = hit.text.strip()
-                    print(text)
-
-
-crawl(["mfa"])
+                    if "Postiosoite" in text:
+                        break
+                    if len(text) != 0:
+                        texts.append(text)
+    return texts
