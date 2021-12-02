@@ -1,14 +1,19 @@
 import json
 import os.path
 import time
+from difflib import SequenceMatcher
 
 import requests
 from os.path import exists
 
 
-def checkurl(url: str) -> bool:
+def similar(a, b):
+    return SequenceMatcher(None, a, b).ratio()
+
+
+def checkurl(url: str) -> float:
     url_list = []
-    is_phish = False
+    is_phish = 0
 
     if not exists("PhishTank.json") or (time.time() - os.path.getmtime("PhishTank.json")) >= (7 * 24 * 60 * 60):
         print("Database not found or it's need update, downloading...")
@@ -29,7 +34,9 @@ def checkurl(url: str) -> bool:
             url_list = json.load(f)
 
     for i in url_list:
-        if i == url:
-            is_phish = True
+        similarity = similar(i, url)
+        if similarity >= 0.8:  # Matching percentage, 80% as default.
+            if similarity > is_phish:
+                is_phish = similarity
 
-    return is_phish
+    return is_phish  # Returns highest similarity percentage
