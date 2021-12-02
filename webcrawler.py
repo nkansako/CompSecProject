@@ -15,7 +15,7 @@ def crawl(searchwords: list):
             for link in soup.find_all("a", "teaser"):
                 print(link.get("href"))
 
-                newUrls.append(link.get("href"))
+                newUrls.append(config.crawl_base+link.get("href"))
 
             for url in newUrls:
                 page = requests.get(url)
@@ -27,3 +27,4 @@ def crawl(searchwords: list):
                     print(text)
 
 
+crawl(["mfa"])
