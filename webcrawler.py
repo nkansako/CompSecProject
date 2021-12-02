@@ -4,7 +4,7 @@ import requests
 
 
 def crawl(searchwords: list):
-    texts = []
+    retval = []
     if len(searchwords) != 0:
         for searchword in searchwords:
             search = config.search_beginning + searchword + config.search_end
@@ -27,5 +27,5 @@ def crawl(searchwords: list):
                     if "Postiosoite" in text:
                         break
                     if len(text) != 0:
-                        texts.append(text)
-    return texts
+                        retval.append((url, text))
+    return retval
