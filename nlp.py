@@ -26,8 +26,10 @@ def find_keywords(text: str) -> list:
     tokens = word_tokenize(text)
     fd = FreqDist(tokens)
     keywords = fd.most_common(config.keyword_count)
-
-    return keywords
+    retval = []
+    for key in keywords:
+        retval.append(key[0])
+    return retval
 
 
 def check_domain(sender: str) -> bool:
@@ -125,3 +127,11 @@ def check_link(link: str) -> bool:
         return True
     else:
         return False
+
+
+with open("testi.txt", "r") as file:
+    text = ""
+    for line in file.readlines():
+        text += line
+newText = remove_stop_words(text, 5)
+print(find_keywords(newText))
