@@ -8,7 +8,8 @@ import nltk
 nltk.download('punkt')
 import ast
 import time
-
+import webcrawler
+nltk.download('stopwords')
 
 def main():
     # TODO write main functionality
@@ -31,18 +32,37 @@ def main():
         # email["text"] = nlp.remove_stop_words(email["text"]) can use to remove extra stuff if needed
         text = email["text"]
         ex_score = nlp.score_exclamation_marks(text)
-        keywords = nlp.find_keywords(text)
-        web_crawler(keywords)
+        textwosw = nlp.remove_stop_words(text,3)
+        keywords = nlp.find_keywords(textwosw)
+        print("Text without editing:",text)
+        print("Text with stopwords removed:",textwosw)
+        print("keywords from nlp:",keywords)
+        #web_crawler(keywords)
         body = text
         msgid = email["m_id"]
         sender = email["email"]
         links = email["links"]
         attachments = email["attachment_names"]
-        
-        database.db_insert(conn,cur,body,msgid,sender,links,ex_score,attachments)
+        database.db_insert(conn,cur,body,msgid,sender,links,ex_score,attachments,keywords)
+
     get = database.db_get(conn,cur)
-    parsedGet = database.parseGet(get[0])
-    print(parsedGet["links"])
+    for i in range(1): #change this to len(get) to iterate all. also remember add bool for already crawled msgs
+        parsedGet = database.parseGet(get[i])
+        #for kw in parsedGet["keywords"]:
+        print("Crawling for keywords:",parsedGet["keywords"],"...")
+        tmp = webcrawler.crawl(parsedGet["keywords"])
+        print("Crawled and got return:",tmp)
+        #print(parsedGet["links"])
+        tmp2 = 0
+        matchj = 0
+        for j in range(len(tmp)):
+            print("Crossreferencing crawl with email body...")
+            #print("keyword:",tmp[j][1])
+            crefscore = nlp.cross_reference(tmp[j][1],parsedGet["body"])
+            if crefscore > tmp2:
+                crefscore = tmp2
+                matchj = j
+        #print("\n\n\n\n\nBest match with crawling: Keyword ",tmp[matchj][1],"\n\nRelates to:",parsedGet["body"])
 
 
 
@@ -80,6 +100,7 @@ if __name__ == "__main__":
     conn = database.create_connection()
     cur = database.create_cursor(conn)
     database.format_table(conn,cur)
+    #call main()
     main()
     #close DB
     database.db_close(conn)

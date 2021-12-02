@@ -129,9 +129,9 @@ def check_link(link: str) -> bool:
         return False
 
 
-with open("testi.txt", "r") as file:
-    text = ""
-    for line in file.readlines():
-        text += line
-newText = remove_stop_words(text, 5)
-print(find_keywords(newText))
+#with open("testi.txt", "r") as file:
+#    text = ""
+#    for line in file.readlines():
+#        text += line
+#newText = remove_stop_words(text, 5)
+#print(find_keywords(newText))

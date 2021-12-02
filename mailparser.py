@@ -18,7 +18,7 @@ def mailparser(email):
     attachment_names = email.attachments
     soup = BeautifulSoup(body, features="html.parser")
 
-    text = soup.get_text()
+    text = soup.get_text("\n")
     hyperlinks = []
     for link in soup.findAll("a"):
         hyperlinks.append(link.get("href"))

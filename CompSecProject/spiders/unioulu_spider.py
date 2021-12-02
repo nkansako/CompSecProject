@@ -26,6 +26,12 @@ class UniouluSpider(scrapy.Spider):
             hyperlinks.append(tmp)
             print(tmp)
 
+
+        #https://www.oulu.fi/fi/uutiset/opiskelija-ota-mfa-kayttoosi-lokakuun-aikana
+        #for hit in soup.find_all(attrs={​​​​​​​​​'class' : 'body field--type-text-with-summary field--view-mode-full text-long'}​​​​​​​​​):
+        #    text = hit.text.strip()
+        #    print(text)
+
     def parse_attr(self, response):
         item = OuluItem()
         item["link"] = response.url

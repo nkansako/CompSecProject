@@ -8,7 +8,7 @@ check_urls = True
 check_sender = True
 check_body = True
 
-keyword_count = 3
+keyword_count = 6
 crawl_count = 3
 
 domain_staff = "oulu.fi"
