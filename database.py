@@ -23,7 +23,7 @@ def db_close(conn):
 
 def format_table(conn,cur):
     cur.execute("DROP TABLE IF EXISTS MAIL")
-    com = 'CREATE TABLE MAIL(BODY CHAR(12345) NOT NULL, MSG_ID CHAR(1024) NOT NULL, SENDER CHAR(255) NOT NULL, LINKS CHAR(12345) NOT NULL, SCORE CHAR(255) NOT NULL, ATTACHMENTS CHAR(1024) NOT NULL, KEYWORDS CHAR(1024) NOT NULL)'
+    com = 'CREATE TABLE MAIL(BODY CHAR(12345) NOT NULL, MSG_ID CHAR(1024) NOT NULL, SENDER CHAR(255) NOT NULL, LINKS CHAR(12345) NOT NULL, SCORE CHAR(255) NOT NULL, ATTACHMENTS CHAR(1024) NOT NULL, KEYWORDS CHAR(1024) NOT NULL, CHECKED INT(1) DEFAULT 0)'
     cur.execute(com)
     print("DB: table 'mail' created successfully")
     conn.commit
@@ -44,6 +44,13 @@ def db_insert(conn,cur,body,msg_id,sender,links,score,attachments,keywords):
             print("message succesfully saved to database.")
     except Error as e:
         print("ERROR in db_insert: ",e)
+
+def db_update_status(conn, cur, msg_id):
+    try:
+        cur.execute('UPDATE mail SET checked = 1 WHERE msg_id = ?',(msg_id,))
+        conn.commit()
+    except Error as e:
+        print("ERROR in db_update_status: ",e)
 
 def db_get(conn,cur):
     try:
