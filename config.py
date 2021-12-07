@@ -14,9 +14,11 @@ crawl_count = 3
 domain_staff = "oulu.fi"
 domain_student = "student.oulu.fi"
 
-special_characters = [",", ".", "/", "\"", ";", "-", "_", "!", "?", "(", ")", "--", ".\"", "!--", ",\"", ".--", "'", ":", "*", '""', '"', "``", "''", '’', '—', '‘']
+special_characters = [",", ".", "/", "\"", ";", "-", "_", "!", "?", "(", ")", "--", ".\"", "!--", ",\"", ".--", "'", ":", "*", '""', '"', "``", "''", '’', '—', '‘', "»"]
 
 search_beginning = "https://www.oulu.fi/fi/search?search_api_fulltext="
 search_end = "&field_targeting=All"
 
 crawl_base = "https://www.oulu.fi"
+
+possibly_dangerous = ["pdf", "docx", "xlsx", "ppt"]
