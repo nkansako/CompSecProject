@@ -36,9 +36,9 @@ def add_messages_to_database(messages):
         ex_score = nlp.score_exclamation_marks(text)
         textwosw = nlp.remove_stop_words(text, 3)
         keywords = nlp.find_keywords(textwosw)
-        print("Text without editing:", text)
-        print("Text with stopwords removed:", textwosw)
-        print("keywords from nlp:", keywords)
+        #print("Text without editing:", text)
+        #print("Text with stopwords removed:", textwosw)
+        #print("keywords from nlp:", keywords)
         body = text
         body = body.replace(u'\xa0', u' ')
         msgid = email["m_id"]
@@ -51,7 +51,7 @@ def add_messages_to_database(messages):
 def check_emails():
     get = database.db_get(conn, cur)
     for i in range(len(get)):
-        parsedGet = database.parseGet(get)
+        parsedGet = database.parseGet(get[i])
         if parsedGet["checked"] == 0:
             sender_val = nlp.check_domain(parsedGet["sender"])
             if sender_val:
@@ -59,7 +59,8 @@ def check_emails():
             else:
                 print("This email came from outside of the university!\nWhile this does not make the sender malicious, remain cautious!")
             for link in parsedGet["links"]:
-                url_value = phishcheck.check_url(link)
+                print(link)
+                url_value = phishcheck.checkurl(link)
                 if url_value > 0.8:
                     print("Link: ", link, " is fishy ")
                 url_value2 = nlp.check_link(link)
@@ -67,15 +68,16 @@ def check_emails():
                     print("This link: ", link, " should be from university website")
                 else:
                     print("This link: ", link, " should be from outside of the university website")
-            for attachment in parsedGet["attachments"]:
-                attachment_val = nlp.dummy_check_attachments(attachment)
-                if attachment_val == 1.0:
-                    print("Nothing fishy here in attachment: ", attachment, " file type should be safe")
-                elif attachment_val == 0.5:
-                    print("Something may be fishy about attachment: ", attachment,
-                          " file type is often used maliciously")
-                else:
-                    print("This file is very suspicious, do not open the file! Attachment: ", attachment)
+            if parsedGet["attachments"] != 0 and len(parsedGet["attachments"]) > 1:
+                for attachment in parsedGet["attachments"]:
+                    attachment_val = nlp.dummy_check_attachments(attachment)
+                    if attachment_val == 1.0:
+                        print("Nothing fishy here in attachment: ", attachment, " file type should be safe")
+                    elif attachment_val == 0.5:
+                        print("Something may be fishy about attachment: ", attachment,
+                              " file type is often used maliciously")
+                    else:
+                        print("This file is very suspicious, do not open the file! Attachment: ", attachment)
             #if nlp.check_sender_name(parsedGet["sender"]):
 
               #  print("Crawling for keywords:", parsedGet["keywords"], "...")
