@@ -109,16 +109,19 @@ def check_grammar(text: str) -> float:
         pass
 
 
-def dummy_check_attachments(attachments: list) -> float:
-    if len(attachments) != 0:
-        for attachment in attachments:
-            extension = attachment.split(".")[1]
-            if extension == "exe":
-                return 0.0
-            elif extension in config.possibly_dangerous:
-                return 0.5
-            else:
-                return 1.0
+def dummy_check_attachment(attachment: str) -> float:
+    c = attachment.count(".")
+    print("c: ", c)
+    if c > 0:
+        extension = attachment.split(".")[1]
+        if extension == "exe":
+            return 0.0
+        elif extension in config.possibly_dangerous:
+            return 0.5
+        else:
+            return 1.0
+    else:
+        return 0.0
 
 
 def check_link(link: str) -> bool:

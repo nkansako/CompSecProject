@@ -56,21 +56,25 @@ def check_emails():
             sender_val = nlp.check_domain(parsedGet["sender"])
             if sender_val:
                 print("This email came from a university staff member or another student\nWhile this makes the email more likely to not be malicious, do not rely on only this information, the email could also be stolen!")
+                print("Sender: ", parsedGet["sender"])
             else:
                 print("This email came from outside of the university!\nWhile this does not make the sender malicious, remain cautious!")
+                print("Sender: ", parsedGet["sender"])
             for link in parsedGet["links"]:
-                print(link)
                 url_value = phishcheck.checkurl(link)
                 if url_value > 0.8:
                     print("Link: ", link, " is fishy ")
+                else:
+                    print("Link: ", link, " does not seem to be fishy")
                 url_value2 = nlp.check_link(link)
                 if url_value2:
                     print("This link: ", link, " should be from university website")
                 else:
                     print("This link: ", link, " should be from outside of the university website")
-            if parsedGet["attachments"] != 0 and len(parsedGet["attachments"]) > 1:
+            if parsedGet["attachments"] != 0:
                 for attachment in parsedGet["attachments"]:
-                    attachment_val = nlp.dummy_check_attachments(attachment)
+                    print(attachment)
+                    attachment_val = nlp.dummy_check_attachment(attachment)
                     if attachment_val == 1.0:
                         print("Nothing fishy here in attachment: ", attachment, " file type should be safe")
                     elif attachment_val == 0.5:
@@ -127,6 +131,7 @@ def run_tests():
                 print("This link: ", link, " should be from university website")
             else:
                 print("This link: ", link, " should be from outside of the university website")
+
         for attachment in parsedGet["attachments"]:
             attachment_val = nlp.dummy_check_attachments(attachment)
             if attachment_val == 1.0:
