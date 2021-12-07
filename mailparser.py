@@ -16,6 +16,9 @@ def mailparser(email):
     subject = email.subject
     m_id = email.message_id
     attachment_names = email.attachments
+    print(attachment_names)
+    for i in range(len(attachment_names)):
+        attachment_names[i] = str(attachment_names[i])
     soup = BeautifulSoup(body, features="html.parser")
 
     text = soup.get_text("\n")
