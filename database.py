@@ -23,7 +23,7 @@ def db_close(conn):
 
 def format_table(conn,cur):
     cur.execute("DROP TABLE IF EXISTS MAIL")
-    com = 'CREATE TABLE MAIL(BODY CHAR(12345) NOT NULL, MSG_ID CHAR(1024) NOT NULL, SENDER CHAR(255) NOT NULL, LINKS CHAR(12345) NOT NULL, SCORE CHAR(255) NOT NULL, ATTACHMENTS CHAR(1024) NOT NULL, KEYWORDS CHAR(1024) NOT NULL, CHECKED INT(1) DEFAULT 0)'
+    com = 'CREATE TABLE MAIL(BODY CHAR(12345) NOT NULL, MSG_ID CHAR(1024) NOT NULL, SENDER CHAR(255) NOT NULL, LINKS CHAR(12345) NOT NULL, SCORE CHAR(255) NOT NULL, ATTACHMENTS CHAR(1024) NOT NULL, KEYWORDS CHAR(1024) NOT NULL, CHECKED INTEGER DEFAULT 0)'
     cur.execute(com)
     print("DB: table 'mail' created successfully")
     conn.commit
@@ -39,7 +39,7 @@ def db_insert(conn,cur,body,msg_id,sender,links,score,attachments,keywords):
         if len(get)!=0:
             print("message already exists in database.")
         else:
-            cur.execute('INSERT INTO MAIL(BODY, MSG_ID, SENDER, LINKS, SCORE, ATTACHMENTS, KEYWORDS) VALUES (?, ?, ?, ?, ?, ?, ?)',(body,msg_id,sender,links,score,attachments,keywords))
+            cur.execute('INSERT INTO MAIL(BODY, MSG_ID, SENDER, LINKS, SCORE, ATTACHMENTS, KEYWORDS, CHECKED) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',(body,msg_id,sender,links,score,attachments,keywords,0))
             conn.commit()
             print("message succesfully saved to database.")
     except Error as e:
@@ -51,6 +51,13 @@ def db_update_status(conn, cur, msg_id):
         conn.commit()
     except Error as e:
         print("ERROR in db_update_status: ",e)
+
+def db_update_score(conn, cur, msg_id, sus):
+    try:
+        cur.execute('UPDATE mail SET score = ? WHERE msg_id = ?',(sus,msg_id))
+        conn.commit()
+    except Error as e:
+        print("ERROR in db_update_score: ",e)
 
 def db_get(conn,cur):
     try:
@@ -65,9 +72,14 @@ def db_get(conn,cur):
 
 def parseGet(get):
     try:
+        print("attempting to ast---",get[3],"---END OF AST ATTEMPT")
         tmp = ast.literal_eval(get[3])
+        print("ast attempt:",tmp)
         tmp2 = ast.literal_eval(get[6])
-        att = ast.literal_eval(get[5])
+        if get[5]!= 0:
+            att = ast.literal_eval(get[5])
+        else:
+            att=0
         parsedGet = {"body": get[0], "msg_id": get[1], "sender": get[2], "links": tmp, "score": get[4], "attachments": att, "keywords": tmp2, "checked": get[7]}
         return parsedGet
     except Error as e:
