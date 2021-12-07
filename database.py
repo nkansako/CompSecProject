@@ -61,14 +61,14 @@ def db_get(conn,cur):
         print("table succesfully read")
         return get
     except Error as e:
-        print(e)
+        print("Error in db_get:",e)
 
 def parseGet(get):
     try:
         tmp = ast.literal_eval(get[3])
         tmp2 = ast.literal_eval(get[6])
         att = ast.literal_eval(get[5])
-        parsedGet = {"body": get[0], "msg_id": get[1], "sender": get[2], "links": tmp, "score": get[4], "attachments": att, "keywords": tmp2}
+        parsedGet = {"body": get[0], "msg_id": get[1], "sender": get[2], "links": tmp, "score": get[4], "attachments": att, "keywords": tmp2, "checked": get[7]}
         return parsedGet
     except Error as e:
         print("error in getToList: ",e)
