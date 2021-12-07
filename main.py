@@ -51,6 +51,7 @@ def add_messages_to_database(messages):
 def check_emails():
     get = database.db_get(conn, cur)
     for i in range(len(get)):
+        score = 1
         parsedGet = database.parseGet(get[i])
         if parsedGet["checked"] == 0:
             sender_val = nlp.check_domain(parsedGet["sender"])
@@ -60,10 +61,14 @@ def check_emails():
             else:
                 print("This email came from outside of the university!\nWhile this does not make the sender malicious, remain cautious!")
                 print("Sender: ", parsedGet["sender"])
+                if(score>0.5):
+                    score=0.5
             for link in parsedGet["links"]:
                 url_value = phishcheck.checkurl(link)
                 if url_value > 0.8:
                     print("Link: ", link, " is fishy ")
+                    if(score>0):
+                        score=0
                 else:
                     print("Link: ", link, " does not seem to be fishy")
                 url_value2 = nlp.check_link(link)
@@ -71,6 +76,8 @@ def check_emails():
                     print("This link: ", link, " should be from university website")
                 else:
                     print("This link: ", link, " should be from outside of the university website")
+                    if(score>0.5):
+                        score=0.5
             if parsedGet["attachments"] != 0:
                 for attachment in parsedGet["attachments"]:
                     print(attachment)
@@ -80,8 +87,14 @@ def check_emails():
                     elif attachment_val == 0.5:
                         print("Something may be fishy about attachment: ", attachment,
                               " file type is often used maliciously")
+                    if(not url_value2 and score > 0.5):
+                        score=0.5
                     else:
                         print("This file is very suspicious, do not open the file! Attachment: ", attachment)
+                        if(score>0):
+                            score=0
+            database.db_update_score(conn,cur,parsedGet["msg_id"],score)
+            database.db_update_status(conn,cur,parsedGet["msg_id"])
             #if nlp.check_sender_name(parsedGet["sender"]):
 
               #  print("Crawling for keywords:", parsedGet["keywords"], "...")
@@ -142,6 +155,12 @@ def run_tests():
                 print("This file is very suspicious, do not open the file! Attachment: ", attachment)
 
     database.db_close(conn1)
+
+def print_checked_mails():
+    get = database.db_get(conn, cur)
+    for i in range(len(get)):
+        if(get[i][7] == 1):
+            print("Message:",get[1],". Score:",get[4])
 
 
 if __name__ == "__main__":

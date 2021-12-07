@@ -23,7 +23,7 @@ def db_close(conn):
 
 def format_table(conn,cur):
     cur.execute("DROP TABLE IF EXISTS MAIL")
-    com = 'CREATE TABLE MAIL(BODY CHAR(12345) NOT NULL, MSG_ID CHAR(1024) NOT NULL, SENDER CHAR(255) NOT NULL, LINKS CHAR(12345) NOT NULL, SCORE CHAR(255) NOT NULL, ATTACHMENTS CHAR(1024) NOT NULL, KEYWORDS CHAR(1024) NOT NULL, CHECKED INTEGER DEFAULT 0)'
+    com = 'CREATE TABLE MAIL(BODY CHAR(12345) NOT NULL, MSG_ID CHAR(1024) NOT NULL, SENDER CHAR(255) NOT NULL, LINKS CHAR(12345) NOT NULL, SCORE CHAR(255) NOT NULL, ATTACHMENTS CHAR(12345) NOT NULL, KEYWORDS CHAR(1024) NOT NULL, CHECKED INTEGER DEFAULT 0)'
     cur.execute(com)
     print("DB: table 'mail' created successfully")
     conn.commit
@@ -72,11 +72,12 @@ def db_get(conn,cur):
 
 def parseGet(get):
     try:
-        print("attempting to ast---",get[3],"---END OF AST ATTEMPT")
+        print("attempting to ast get3---",get[3],"---END OF AST ATTEMPT")
         tmp = ast.literal_eval(get[3])
-        print("ast attempt:",tmp)
+        print("resolved ast get3 attempt:",tmp)
         tmp2 = ast.literal_eval(get[6])
         if get[5]!= 0:
+            print("attempting to ast get5---",get[5],"---END OF ATTEMPT")
             att = ast.literal_eval(get[5])
         else:
             att=0
