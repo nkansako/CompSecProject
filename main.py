@@ -67,7 +67,7 @@ def add_messages_to_database(messages):
 def check_emails():
     get = database.db_get(conn, cur)
     write("\n......................................................................................................................................................")
-    for i in range(len(get)):
+    for i in range(1): #adjust amount of mails checked with this, len(get)=max
         score = 1
         parsedGet = database.parseGet(get[i])
         if parsedGet["checked"] == 0:
@@ -236,8 +236,38 @@ def gui_checkmail():
 
 
 def gui_score():
-    write("SCORE FUNKTIO TÄHÄN")
-
+    print("Score button pressed.")
+    #global conn,cur
+    get = database.db_get(conn, cur)
+    print("Got a get in gui_score of len:",len(get))
+    for i in range(len(get)):
+        print("get7 value:",get[i][7])
+        if(get[i][7] == 1):
+            print("Found a checked mail.")
+            tmp = 0
+            prevspace = 0
+            write("Body:\"", end = "")
+            for k in get[i][0]:
+                if(k == "\n" and prevspace == 0):
+                    k = " "
+                    prevspace = 1
+                elif((k == "\n" or k == " ") and prevspace == 1):
+                    k = ""
+                elif(k == " "):
+                    prevspace = 1
+                else:
+                    prevspace = 0
+                write(k, end ="")
+                tmp+=1
+                if(tmp>50):
+                    break
+            write("\"...\nMessage ID:",get[i][1],". Score:",get[i][4], end = "")
+            if(get[i][4]=='1'):
+                write(", likely safe.")
+            elif(get[i][4]=='0.5'):
+                write(", care required, likely contains odd attachments/links to outside the university.")
+            elif(get[i][4]=='0'):
+                write(", suspicious.")
 
 
 def gui_quit():
