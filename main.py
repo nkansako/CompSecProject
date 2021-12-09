@@ -1,4 +1,3 @@
-
 import mail
 import mailparser
 import nlp
@@ -6,17 +5,16 @@ import logging
 import config
 import database
 import nltk
-
-nltk.download('punkt')
-import ast
 import time
 import webcrawler
 import tester
 import phishcheck
 import tkinter as tk
-
-nltk.download('stopwords')
 import numpy as np
+
+nltk.download('punkt')
+nltk.download('stopwords')
+
 
 def write(*message, end="\n\n", sep=" "):
     text = ""
@@ -24,26 +22,18 @@ def write(*message, end="\n\n", sep=" "):
         text += "{}".format(item)
         text += sep
     text += end
-    console.insert(tk.INSERT, text)
+    console["state"] = tk.NORMAL
+    console.insert(tk.END, text)
+    console["state"] = tk.DISABLED
     console.see("end")
     window.update()
 
 
-def main():
-    # TODO write main functionality
-
-    # init_logger()
-    messages = mail.getMail(account)
-    write("Got ", len(messages), " messages.")
-
-    logging.info("Parsing emails")
-
-    add_messages_to_database(messages)
-
-    check_emails()
-
-
 def collect_mails():
+    global conn, cur
+    conn = database.create_connection()
+    cur = database.create_cursor(conn)
+    database.format_table(conn, cur)
     messages = mail.getMail(account)
     write("Got ", len(messages), " messages.")
 
@@ -84,11 +74,13 @@ def add_messages_to_database(messages):
 
 
 def check_emails():
+    global url_value2
     try:
         get = database.db_get(conn, cur)
         if len(get) == 0:
             return 0
-        write("\n......................................................................................................................................................")
+        write(
+            ".....................................................................................................................................................")
         for i in range(config.email_count):
             score = 1
             parsedGet = database.parseGet(get[i])
@@ -97,28 +89,39 @@ def check_emails():
                 if sender_val:
                     write(
                         "This email came from a university staff member or another student\nWhile this makes the email more likely to not be malicious, do not rely on only this information, the email could also be stolen!")
-                    write("Sender: ", parsedGet["sender"])
+                    write("Sender: ", parsedGet["sender"], "\n")
                 else:
                     write(
                         "This email came from outside of the university!\nWhile this does not make the sender malicious, remain cautious!")
-                    write("Sender: ", parsedGet["sender"])
-                    if (score > 0.5):
+                    write("Sender: ", parsedGet["sender"], "\n")
+                    if score > 0.5:
                         score = 0.5
+
                 for link in parsedGet["links"]:
-                    url_value = phishcheck.checkurl(link)
+                    verdict = ""
+                    url_value = phishcheck.check_url(link)
                     if url_value > 0.8:
-                        write("Link: ", link, " is fishy ")
-                        if (score > 0):
+                        if len(link) >= 140:
+                            verdict += link[0:140] + "...\nLink is fishy."
+                        else:
+                            verdict += link + "\nLink is fishy."
+                        if score > 0:
                             score = 0
                     else:
-                        write("Link: ", link, " does not seem to be fishy")
+                        if len(link) >= 140:
+                            verdict += link[0:140] + "...\nLink does not seem to be fishy."
+                        else:
+                            verdict += link + "\nLink does not seem to be fishy."
                     url_value2 = nlp.check_link(link)
+
                     if url_value2:
-                        write("This link: ", link, " should be from university website")
+                        verdict += " It should be from university website"
                     else:
-                        write("This link: ", link, " should be from outside of the university website")
-                        if (score > 0.5):
+                        verdict += " It should be from outside of the university website"
+                        if score > 0.5:
                             score = 0.5
+                    write(verdict)
+
                 if parsedGet["attachments"] != 0:
                     for attachment in parsedGet["attachments"]:
                         write(attachment)
@@ -128,30 +131,30 @@ def check_emails():
                         elif attachment_val == 0.5:
                             write("Something may be fishy about attachment: ", attachment,
                                   " file type is often used maliciously")
-                        if (not url_value2 and score > 0.5):
+                        if not url_value2 and score > 0.5:
                             score = 0.5
                         else:
                             write("This file is very suspicious, do not open the file! Attachment: ", attachment)
-                            if (score > 0):
+                            if score > 0:
                                 score = 0
 
-                #if checked.get():
+                # if checked.get():
                 #    links = crawl(parsedGet["keywords"])
                 #    print_crawled_links(links)
                 database.db_update_score(conn, cur, parsedGet["msg_id"], score)
                 database.db_update_status(conn, cur, parsedGet["msg_id"])
 
-                write("......................................................................................................................................................")
+                write(
+                    ".....................................................................................................................................................")
     except AttributeError as e:
         print(e)
         write("No collected emails, collect emails first!")
 
+        # if nlp.check_sender_name(parsedGet["sender"]):
 
-                # if nlp.check_sender_name(parsedGet["sender"]):
-
-                #  print()("Crawling for keywords:", parsedGet["keywords"], "...")
-                #  tmp = webcrawler.crawl(parsedGet["keywords"])
-                #  print()("Crawled and got return:", tmp)
+        #  print()("Crawling for keywords:", parsedGet["keywords"], "...")
+        #  tmp = webcrawler.crawl(parsedGet["keywords"])
+        #  print()("Crawled and got return:", tmp)
 
 
 def init_logger():
@@ -198,7 +201,7 @@ def run_tests():
                 print("This link: ", link, " should be from outside of the university website")
 
         for attachment in parsedGet["attachments"]:
-            attachment_val = nlp.dummy_check_attachments(attachment)
+            attachment_val = nlp.dummy_check_attachment(attachment)
             if attachment_val == 1.0:
                 print("Nothing fishy here in attachment: ", attachment, " file type should be safe")
             elif attachment_val == 0.5:
@@ -220,7 +223,8 @@ def print_checked_mails():
 def crawl() -> list:
     try:
         get = database.db_get(conn, cur)
-        write("\n......................................................................................................................................................")
+        write(
+            ".....................................................................................................................................................")
         links = []
         for i in range(config.email_count):
             parsedGet = database.parseGet(get[i])
@@ -231,7 +235,6 @@ def crawl() -> list:
                     links = []
                     for _ in val:
                         links.append(_[0])
-            #write("\n......................................................................................................................................................")
         return links
     except AttributeError as e:
         print("No collected emails, collect emails first")
@@ -251,21 +254,16 @@ def gui_login():
     if account != "":
         write("Login succesfully")
         login_button.pack_forget()
-        collect_button.pack(side=tk.LEFT)
         check_button.pack(side=tk.LEFT)
-        #crawl_check.pack(side=tk.LEFT)
         crawl_button.pack(side=tk.LEFT)
-        score_button.pack(side=tk.LEFT)
-
-
     else:
         write("Login failed, try again")
 
 
 def gui_checkmail():
-    # call main()
-    #main()
+    collect_mails()
     check_emails()
+    score_button.pack(side=tk.LEFT)
     write("Done checking emails")
 
 
@@ -309,6 +307,7 @@ def gui_score():
 
 
 def gui_crawl():
+    collect_mails()
     write("Crawling.... Window may seem to be frozen")
     links_ = crawl()
     try:
@@ -323,15 +322,10 @@ def gui_quit():
     window.destroy()
 
 
-def gui_collect():
-    global conn, cur
-    write("Checking mails, please wait...")
-    write("Creating database...")
-    conn = database.create_connection()
-    cur = database.create_cursor(conn)
-    database.format_table(conn, cur)
-    collect_mails()
-    write("Done collecting mails")
+def gui_test():
+    for i in range(10):
+        write(i)
+
 
 # GUI
 if __name__ == '__main__':
@@ -345,15 +339,11 @@ if __name__ == '__main__':
 
     login_button = tk.Button(window, text="Login ", command=gui_login)
     check_button = tk.Button(window, text="Check Mails", command=gui_checkmail)
-    score_button = tk.Button(window, text="Score", command=gui_score)
     crawl_button = tk.Button(window, text="Crawl university website", command=gui_crawl)
-    collect_button = tk.Button(window, text="Collect emails", command=gui_collect)
+    score_button = tk.Button(window, text="Score", command=gui_score)
     quit_button = tk.Button(window, text="Quit", command=gui_quit)
 
-    #checked = tk.BooleanVar()
-    #crawl_check = tk.Checkbutton(window, text="Crawl links while checking emails", variable=checked, onvalue=True, offvalue=False)
-
-    console = tk.Text(window, height=25, width=150)
+    console = tk.Text(window, height=25, width=150, state=tk.DISABLED)
 
     console.pack(side=tk.TOP)
     login_button.pack(side=tk.LEFT)

@@ -11,12 +11,12 @@ def similar(a, b):
     return SequenceMatcher(None, a, b).ratio()
 
 
-def checkurl(url: str) -> float:
+def check_url(url: str) -> float:
     url_list = []
     is_phish = 0
 
     if not exists("PhishTank.json") or (time.time() - os.path.getmtime("PhishTank.json")) >= (7 * 24 * 60 * 60):
-        print("Database not found or it's need update, downloading...")
+        print("Phishtank database not found or it's need update, downloading...")
 
         # full_list = json.loads(requests.get("https://data.phishtank.com/data/online-valid.json").text)
         full_list = json.load(open("verified_online.json"))
@@ -30,7 +30,7 @@ def checkurl(url: str) -> float:
 
         print("Database downloaded!")
     else:
-        print("Database found!")
+        print("Phishtank database found!")
         with open("PhishTank.json", 'r') as f:
             url_list = json.load(f)
 
