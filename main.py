@@ -18,7 +18,6 @@ import tkinter as tk
 nltk.download('stopwords')
 import numpy as np
 
-
 def write(*message, end="\n\n", sep=" "):
     text = ""
     for item in message:
@@ -70,16 +69,16 @@ def add_messages_to_database(messages):
         msgid = email["m_id"]
         sender = email["email"]
         links = email["links"]
-        print("links in addmsgtodb:",links)
+        print("links in addmsgtodb:", links)
         j = []
         for i in range(len(links)):
             if 'mailto' in links[i]:
                 j.append(i)
         for i in range(len(j)):
             x = j.pop()
-            print("deleting false link before db insert:",links[x])
+            print("deleting false link before db insert:", links[x])
             del links[x]
-            np.subtract(j,1)
+            np.subtract(j, 1)
         attachments = email["attachment_names"]
         database.db_insert(conn, cur, body, msgid, sender, links, ex_score, attachments, keywords)
 
@@ -232,7 +231,7 @@ def crawl() -> list:
                     links = []
                     for _ in val:
                         links.append(_[0])
-            write("\n......................................................................................................................................................")
+            #write("\n......................................................................................................................................................")
         return links
     except AttributeError as e:
         print("No collected emails, collect emails first")
@@ -271,46 +270,52 @@ def gui_checkmail():
 
 
 def gui_score():
-    print("Score button pressed.")
-    # global conn,cur
-    get = database.db_get(conn, cur)
-    print("Got a get in gui_score of len:", len(get))
-    for i in range(len(get)):
-        print("get7 value:", get[i][7])
-        if (get[i][7] == 1):
-            print("Found a checked mail.")
-            tmp = 0
-            prevspace = 0
-            write("Body:\"", end="")
-            for k in get[i][0]:
-                if (k == "\n" and prevspace == 0):
-                    k = " "
-                    prevspace = 1
-                elif ((k == "\n" or k == " ") and prevspace == 1):
-                    k = ""
-                elif (k == " "):
-                    prevspace = 1
-                else:
-                    prevspace = 0
-                write(k, end="")
-                tmp += 1
-                if (tmp > 50):
-                    break
-            write("\"...\nMessage ID:", get[i][1], ". Score:", get[i][4], end="")
-            if (get[i][4] == '1'):
-                write(", likely safe.")
-            elif (get[i][4] == '0.5'):
-                write(", care required, likely contains odd attachments/links to outside the university.")
-            elif (get[i][4] == '0'):
-                write(", suspicious.")
+    try:
+        print("Score button pressed.")
+        # global conn,cur
+        get = database.db_get(conn, cur)
+        print("Got a get in gui_score of len:", len(get))
+        for i in range(len(get)):
+            print("get7 value:", get[i][7])
+            if (get[i][7] == 1):
+                print("Found a checked mail.")
+                tmp = 0
+                prevspace = 0
+                write("Body:\"", end="")
+                for k in get[i][0]:
+                    if (k == "\n" and prevspace == 0):
+                        k = " "
+                        prevspace = 1
+                    elif ((k == "\n" or k == " ") and prevspace == 1):
+                        k = ""
+                    elif (k == " "):
+                        prevspace = 1
+                    else:
+                        prevspace = 0
+                    write(k, end="")
+                    tmp += 1
+                    if (tmp > 50):
+                        break
+                write("\"...\nMessage ID:", get[i][1], ". Score:", get[i][4], end="")
+                if (get[i][4] == '1'):
+                    write(", likely safe.")
+                elif (get[i][4] == '0.5'):
+                    write(", care required, likely contains odd attachments/links to outside the university.")
+                elif (get[i][4] == '0'):
+                    write(", suspicious.")
+    except AttributeError as e:
+        print(e)
+        write("No emails collected, collect emails first")
 
 
 def gui_crawl():
-    write("Crawling....")
+    write("Crawling.... Window may seem to be frozen")
     links_ = crawl()
-    print_crawled_links(links_)
-    for link in links_:
-        print(link)
+    try:
+        print_crawled_links(links_)
+    except TypeError as e:
+        print(e)
+        write("No emails collected, or no links found")
     write("Done crawling emails")
 
 
