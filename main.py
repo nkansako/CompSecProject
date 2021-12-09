@@ -111,6 +111,9 @@ def check_emails():
                         write("This file is very suspicious, do not open the file! Attachment: ", attachment)
                         if (score > 0):
                             score = 0
+
+            links = crawl(parsedGet["keywords"])
+            print_crawled_links(links)
             database.db_update_score(conn, cur, parsedGet["msg_id"], score)
             database.db_update_status(conn, cur, parsedGet["msg_id"])
             # if nlp.check_sender_name(parsedGet["sender"]):
@@ -216,8 +219,19 @@ def gui_check_automated():
         time.sleep(5)
 
 
+def crawl(keywords: list) -> list:
+    if keywords != 0:
+        val = webcrawler.crawl(keywords)
+        links = []
+        for _ in val:
+            links.append(_[0])
+    return links
 
 
+def print_crawled_links(links: list):
+    print("Crawled university website for links and found following news items: ")
+    for link in links:
+        print(link)
 
 
 def gui_quit():
