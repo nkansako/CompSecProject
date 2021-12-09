@@ -18,7 +18,7 @@ import tkinter as tk
 nltk.download('stopwords')
 
 
-def write(*message, end="\n", sep=" "):
+def write(*message, end="\n\n", sep=" "):
     text = ""
     for item in message:
         text += "{}".format(item)
@@ -66,6 +66,7 @@ def add_messages_to_database(messages):
 
 def check_emails():
     get = database.db_get(conn, cur)
+    write("\n......................................................................................................................................................")
     for i in range(len(get)):
         score = 1
         parsedGet = database.parseGet(get[i])
@@ -73,11 +74,11 @@ def check_emails():
             sender_val = nlp.check_domain(parsedGet["sender"])
             if sender_val:
                 write(
-                    "\n\nThis email came from a university staff member or another student\nWhile this makes the email more likely to not be malicious, do not rely on only this information, the email could also be stolen!")
+                    "This email came from a university staff member or another student\nWhile this makes the email more likely to not be malicious, do not rely on only this information, the email could also be stolen!")
                 write("Sender: ", parsedGet["sender"])
             else:
                 write(
-                    "\n\nThis email came from outside of the university!\nWhile this does not make the sender malicious, remain cautious!")
+                    "This email came from outside of the university!\nWhile this does not make the sender malicious, remain cautious!")
                 write("Sender: ", parsedGet["sender"])
                 if (score > 0.5):
                     score = 0.5
@@ -112,15 +113,22 @@ def check_emails():
                         if (score > 0):
                             score = 0
 
-            links = crawl(parsedGet["keywords"])
-            print_crawled_links(links)
-            database.db_update_score(conn, cur, parsedGet["msg_id"], score)
-            database.db_update_status(conn, cur, parsedGet["msg_id"])
+            if False:
+                links = crawl(parsedGet["keywords"])
+                print_crawled_links(links)
+                database.db_update_score(conn, cur, parsedGet["msg_id"], score)
+                database.db_update_status(conn, cur, parsedGet["msg_id"])
+
+            write("......................................................................................................................................................")
+
+
+
             # if nlp.check_sender_name(parsedGet["sender"]):
 
             #  print()("Crawling for keywords:", parsedGet["keywords"], "...")
             #  tmp = webcrawler.crawl(parsedGet["keywords"])
             #  print()("Crawled and got return:", tmp)
+
 
 
 def init_logger():
@@ -195,7 +203,8 @@ def gui_login():
         write("Login succesfully")
         login_button.pack_forget()
         check_button.pack(side=tk.LEFT)
-        auto_check_button.pack(side=tk.LEFT)
+        score_button.pack(side=tk.LEFT)
+
     else:
         write("Login failed, try again")
 
@@ -211,12 +220,8 @@ def gui_checkmail():
     main()
 
 
-def gui_check_automated():
-    counter = 0
-    while is_automated.get():
-        write(counter)
-        counter += 1
-        time.sleep(5)
+def gui_score():
+    write("SCORE FUNKTIO TÄHÄN")
 
 
 def crawl(keywords: list) -> list:
@@ -250,16 +255,13 @@ if __name__ == '__main__':
 
     login_button = tk.Button(window, text="Login ", command=gui_login)
     check_button = tk.Button(window, text="Check Mails", command=gui_checkmail)
+    score_button = tk.Button(window, text="Score", command=gui_score)
     quit_button = tk.Button(window, text="Quit", command=gui_quit)
 
-    is_automated = tk.BooleanVar()
-    auto_check_button = tk.Checkbutton(window, text='Automated check 30s interval',variable=is_automated, onvalue=True, offvalue=False, command=gui_check_automated)
-
-    console = tk.Text(window, height=12, width=150)
+    console = tk.Text(window, height=25, width=150)
 
     console.pack(side=tk.TOP)
     login_button.pack(side=tk.LEFT)
-
     quit_button.pack(side=tk.RIGHT)
 
     startTime = time.perf_counter()

@@ -29,7 +29,8 @@ def authenticate():
                     "https://outlook.office.com/email", "https://outlook.office.com/Mail.Read.Shared",
                     "https://outlook.office.com/Mail.ReadBasic"])
     if "access_token" in result:
-        print(result["access_token"])  # Yay!
+        # print(result["access_token"])  # Yay!
+        pass
     else:
         print(result.get("error"))
         print(result.get("error_description"))
