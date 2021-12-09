@@ -16,6 +16,7 @@ import phishcheck
 import tkinter as tk
 
 nltk.download('stopwords')
+import numpy as np
 
 
 def write(*message, end="\n\n", sep=" "):
@@ -69,6 +70,16 @@ def add_messages_to_database(messages):
         msgid = email["m_id"]
         sender = email["email"]
         links = email["links"]
+        print("links in addmsgtodb:",links)
+        j = []
+        for i in range(len(links)):
+            if 'mailto' in links[i]:
+                j.append(i)
+        for i in range(len(j)):
+            x = j.pop()
+            print("deleting false link before db insert:",links[x])
+            del links[x]
+            np.subtract(j,1)
         attachments = email["attachment_names"]
         database.db_insert(conn, cur, body, msgid, sender, links, ex_score, attachments, keywords)
 
