@@ -18,7 +18,7 @@ def remove_stop_words(line: str, repeat: int = 1) -> str:
     result = ' '.join(words)
     if repeat > 0:
         # due to complex word structure, the stop words removal will be ran multiple times
-        result = remove_stop_words(result, repeat-1)
+        result = remove_stop_words(result, repeat - 1)
     return result
 
 
@@ -74,7 +74,6 @@ def sender_score(name: str, email: str) -> float:
 
 
 def cross_reference(text1: str, text2: str) -> float:
-
     similarities = []
 
     tokens1 = word_tokenize(remove_stop_words(text1))
@@ -131,10 +130,9 @@ def check_link(link: str) -> bool:
     else:
         return False
 
-
-#with open("testi.txt", "r") as file:
+# with open("testi.txt", "r") as file:
 #    text = ""
 #    for line in file.readlines():
 #        text += line
-#newText = remove_stop_words(text, 5)
-#print(find_keywords(newText))
+# newText = remove_stop_words(text, 5)
+# print(find_keywords(newText))

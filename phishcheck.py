@@ -18,7 +18,7 @@ def checkurl(url: str) -> float:
     if not exists("PhishTank.json") or (time.time() - os.path.getmtime("PhishTank.json")) >= (7 * 24 * 60 * 60):
         print("Database not found or it's need update, downloading...")
 
-        #full_list = json.loads(requests.get("https://data.phishtank.com/data/online-valid.json").text)
+        # full_list = json.loads(requests.get("https://data.phishtank.com/data/online-valid.json").text)
         full_list = json.load(open("verified_online.json"))
         for line in full_list:
             for key, value in line.items():

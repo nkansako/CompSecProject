@@ -25,7 +25,9 @@ def authenticate():
     if not result:
         # So no suitable token exists in cache. Let's get a new one from AAD.
         result = app.acquire_token_interactive(  # It automatically provides PKCE protection
-             scopes=["https://outlook.office.com/User.Read", "https://outlook.office.com/Mail.Read","https://outlook.office.com/email","https://outlook.office.com/Mail.Read.Shared","https://outlook.office.com/Mail.ReadBasic"])
+            scopes=["https://outlook.office.com/User.Read", "https://outlook.office.com/Mail.Read",
+                    "https://outlook.office.com/email", "https://outlook.office.com/Mail.Read.Shared",
+                    "https://outlook.office.com/Mail.ReadBasic"])
     if "access_token" in result:
         print(result["access_token"])  # Yay!
     else:
@@ -41,7 +43,8 @@ def authenticate():
     # print(msg_head[0])
     # print("inbox body:", inbox[0].body)
     return account
-    #mailparser.parse_all_emails(inbox)
+    # mailparser.parse_all_emails(inbox)
+
 
 def getMail(account):
     logging.info("Collecting inbox")

@@ -35,6 +35,7 @@ def parse_all_emails(email_list: list) -> list:
     for email in email_list:
         m_id, sender_email, subject, text, links, hyperlinks, attachments = mailparser(email)
         all_links = links + hyperlinks
-        parsed = {"m_id": m_id, "email": sender_email, "subject": subject, "text": text, "links": all_links, "attachment_names": attachments}
+        parsed = {"m_id": m_id, "email": sender_email, "subject": subject, "text": text, "links": all_links,
+                  "attachment_names": attachments}
         parsedMails.append(parsed)
     return parsedMails
