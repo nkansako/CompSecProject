@@ -113,7 +113,7 @@ def check_emails():
                         if (score > 0):
                             score = 0
 
-            if False:
+            if checked.get():
                 links = crawl(parsedGet["keywords"])
                 print_crawled_links(links)
                 database.db_update_score(conn, cur, parsedGet["msg_id"], score)
@@ -194,6 +194,20 @@ def print_checked_mails():
             print("Message:", get[1], ". Score:", get[4])
 
 
+def crawl(keywords: list) -> list:
+    if keywords != 0:
+        val = webcrawler.crawl(keywords)
+        links = []
+        for _ in val:
+            links.append(_[0])
+    return links
+
+
+def print_crawled_links(links: list):
+    print("Crawled university website for links and found following news items: ")
+    for link in links:
+        print(link)
+
 def gui_login():
     global account
     # run_tests()
@@ -203,6 +217,7 @@ def gui_login():
         write("Login succesfully")
         login_button.pack_forget()
         check_button.pack(side=tk.LEFT)
+        crawl_check.pack(side=tk.LEFT)
         score_button.pack(side=tk.LEFT)
 
     else:
@@ -224,20 +239,6 @@ def gui_score():
     write("SCORE FUNKTIO TÄHÄN")
 
 
-def crawl(keywords: list) -> list:
-    if keywords != 0:
-        val = webcrawler.crawl(keywords)
-        links = []
-        for _ in val:
-            links.append(_[0])
-    return links
-
-
-def print_crawled_links(links: list):
-    print("Crawled university website for links and found following news items: ")
-    for link in links:
-        print(link)
-
 
 def gui_quit():
     window.destroy()
@@ -257,6 +258,9 @@ if __name__ == '__main__':
     check_button = tk.Button(window, text="Check Mails", command=gui_checkmail)
     score_button = tk.Button(window, text="Score", command=gui_score)
     quit_button = tk.Button(window, text="Quit", command=gui_quit)
+
+    checked = tk.BooleanVar()
+    crawl_check = tk.Checkbutton(window, text="Crawl links while checking emails", variable=checked, onvalue=True, offvalue=False)
 
     console = tk.Text(window, height=25, width=150)
 
