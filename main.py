@@ -204,9 +204,9 @@ def crawl(keywords: list) -> list:
 
 
 def print_crawled_links(links: list):
-    print("Crawled university website for links and found following news items: ")
+    write("Crawled university website for links and found following news items: ")
     for link in links:
-        print(link)
+        write(link)
 
 def gui_login():
     global account
