@@ -10,6 +10,7 @@ check_body = True
 
 keyword_count = 6
 crawl_count = 3
+email_count = 2  # max 10!
 
 domain_staff = "oulu.fi"
 domain_student = "student.oulu.fi"
