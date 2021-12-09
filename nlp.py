@@ -113,7 +113,7 @@ def dummy_check_attachment(attachment: str) -> float:
     print("c: ", c)
     if c > 0:
         extension = attachment.split(".")[1]
-        if extension == "exe":
+        if extension in config.dangerous:
             return 0.0
         elif extension in config.possibly_dangerous:
             return 0.5
