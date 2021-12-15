@@ -22,6 +22,6 @@ search_end = "&field_targeting=All"
 
 crawl_base = "https://www.oulu.fi"
 
-possibly_dangerous = ["pdf", "docx", "xlsx", "ppt", "doc", "xls", "jpeg"]
+possibly_dangerous = ["pdf", "docx", "xlsx", "ppt", "doc", "xls", "jpeg", "pptx"]
 
 dangerous = ["exe", "zip", "rar", "pif", "vbs", "scr", "rtf"]

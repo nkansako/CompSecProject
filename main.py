@@ -61,14 +61,16 @@ def add_messages_to_database(messages):
         links = email["links"]
         print("links in addmsgtodb:", links)
         j = []
-        for i in range(len(links)):
-            if 'mailto' in links[i]:
-                j.append(i)
-        for i in range(len(j)):
-            x = j.pop()
-            print("deleting false link before db insert:", links[x])
-            del links[x]
-            np.subtract(j, 1)
+        if links != 0:
+            links = list(filter((None).__ne__, links))
+            for i in range(len(links)):
+                if 'mailto' in links[i]:
+                    j.append(i)
+            for i in range(len(j)):
+                x = j.pop()
+                print("deleting false link before db insert:", links[x])
+                del links[x]
+                np.subtract(j, 1)
         attachments = email["attachment_names"]
         database.db_insert(conn, cur, body, msgid, sender, links, ex_score, attachments, keywords)
 
