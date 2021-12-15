@@ -10,12 +10,17 @@ def extract_links(text: str) -> list:
 
 def mailparser(email):
     # TODO: fix sender email and name
+
     body = email.body
     sender = email.sender
     sender_email = sender.email
     subject = email.subject
     m_id = email.message_id
-    attachment_names = email.attachments
+
+    try:
+        attachment_names = email.attachments
+    except TypeError as e:
+        attachment_names = [""]
     print(attachment_names)
     for i in range(len(attachment_names)):
         attachment_names[i] = str(attachment_names[i])
